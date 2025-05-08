@@ -1,7 +1,7 @@
 {
   "name": "Python Development disable copilot",
   "image": "mcr.microsoft.com/vscode/devcontainers/python:3.9",
-  "postCreateCommand": "pip install pytorch transformers",
+  "postCreateCommand": "pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu && pip install transformers",
   "postAttachCommand": "chmod 000 ~/.vscode-remote/extensions/github.copilot* && exit",
   "customizations": {
     "vscode": {
