@@ -32,6 +32,10 @@ You’ll get a response from the LLM printed to your terminal. If you run it aga
 
 Try experimenting with different prompts and temperature values to get a feel for how Python programs can interact with LLMs.
 
+NOTE: The first time you run the chat function, it'll need to download the LLM so it takes some time.  You'll also noticed 
+that the chat function takes time to complete since the LLM is running on a CPU.  In real life, LLMs run on GPUs that are
+extremely powerful but also very expensive.
+
 ## Your Task
 
 As a professional programmer, one of your responsibilities is to **evaluate** how an LLM behaves under different conditions. This assignment asks you to create a program that systematically collects and prints responses from the LLM so that you can compare how it behaves at different temperature settings.
@@ -71,6 +75,7 @@ language changes at different temperature settings? That’s part of the evaluat
 # Submit
 
 Once your program runs correctly, use pytest to verify your solution. 
+Please note that I expect you to only use techniques covered in class up to chapter 4.
 If are satisified, submit your assignment using Git commands.
 
 ```bash

@@ -1,8 +1,8 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import sys, os
 
-model_name = "Qwen/Qwen3-0.6B"
 
+model_name = "Qwen/Qwen3-0.6B"
 # load the tokenizer and the model
 tokenizer = None
 model = None
@@ -14,13 +14,17 @@ CALL_FROM_PYTEST = (
 
 def chat(prompt =  "Give me a short introduction to large language model.", temperature = 1.0):
 
+    global model_name
+    global tokenizer
+    global model
+    
     if CALL_FROM_PYTEST:
         return "Test Response"
 
-    if tokenizer is None:
+    if tokenizer == None:
         tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    if model is None:
+    if model == None:
         model = AutoModelForCausalLM.from_pretrained(
             model_name
         )
