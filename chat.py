@@ -1,6 +1,17 @@
+
+"""
+
+DO NOT MODIFY 
+
+This is the chat function I have provided for you.  You are welcome
+to look at it but do all your work in main.py
+
+"""
+
+
+
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import sys, os
-
 
 model_name = "Qwen/Qwen3-0.6B"
 # load the tokenizer and the model
