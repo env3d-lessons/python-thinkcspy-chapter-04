@@ -1,0 +1,21 @@
+{
+  "name": "Python Development disable copilot",
+  "image": "mcr.microsoft.com/vscode/devcontainers/python:3.9",
+  "postCreateCommand": "pip install pytorch transformers",
+  "postAttachCommand": "chmod 000 ~/.vscode-remote/extensions/github.copilot* && exit",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",  // Python extension
+        "ms-python.vscode-pylance",  // Pylance extension (optional, for better performance)        
+        "github.copilot",
+        "github.copilot-chat"
+      ],
+      "settings": {
+        "python.pythonPath": "/usr/local/bin/python", // Path to Python interpreter
+        "extensions.ignoreRecommendations": true,
+        "github.copilot.enable": {"*":false} // Disable GitHub Copilot
+      }    
+    }
+  }
+}
