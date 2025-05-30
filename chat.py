@@ -8,11 +8,6 @@ to look at it but do all your work in main.py
 
 """
 
-
-
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import sys, os
-
 model_name = "Qwen/Qwen3-0.6B"
 # load the tokenizer and the model
 tokenizer = None
@@ -31,6 +26,9 @@ def chat(prompt =  "Give me a short introduction to large language model.", temp
     
     if CALL_FROM_PYTEST:
         return "Test Response"
+    
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    import sys, os
 
     if tokenizer == None:
         tokenizer = AutoTokenizer.from_pretrained(model_name)
