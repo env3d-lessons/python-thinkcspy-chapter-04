@@ -1,74 +1,75 @@
-
-"""
-
-DO NOT MODIFY 
-
-This is the chat function I have provided for you.  You are welcome
-to look at it but do all your work in main.py
-
-"""
+import random
+import math
 import sys, os
 
-model_name = "Qwen/Qwen3-0.6B"
-# load the tokenizer and the model
-tokenizer = None
-model = None
-
-CALL_FROM_PYTEST = (
-    any("pytest" in arg for arg in sys.argv)
-    or "pytest" in sys.modules
+# Detect if we're running inside a testrunner and skip heavy model init
+running_under_testrunner = (
+    os.environ.get("TESTRUNNER", "").lower() in ("1", "true", "yes")
+    or "PYTEST_CURRENT_TEST" in os.environ
+    or os.environ.get("GITHUB_ACTIONS", "").lower() in ("1", "true", "yes")
 )
 
-def chat(prompt =  "Give me a short introduction to large language model.", temperature = 1.0):
+llm = None
+if not running_under_testrunner:
+    from llama_cpp import Llama
+    # Suppress stderr temporarily
+    stderr = sys.stderr
+    sys.stderr = open(os.devnull, 'w')
 
-    global model_name
-    global tokenizer
-    global model
+    llm = Llama(
+          model_path="./qwen2.5-0.5b-instruct-q4_k_m.gguf",
+          # n_gpu_layers=-1, # Uncomment to use GPU acceleration
+          seed=random.randint(0, 2**31-1),
+          #n_ctx=32768, # Uncomment to increase the context window
+          verbose=False,
+          logits_all=True
+    )
+
+    sys.stderr = stderr  # Restore stderr
+
+
+def complete(prompt, temperature=0.7, max_tokens=1024, top_p=0.9, top_k=40, stop=['\n','<|endoftext|>','<|im_end|>']):
+    if llm is None:
+        raise RuntimeError("LLM not initialized (running under testrunner).")
     
-    if CALL_FROM_PYTEST:
-        return "Test Response"
+    result = llm(prompt, 
+                 max_tokens=max_tokens, 
+                 temperature=temperature, 
+                 top_p=top_p, top_k=top_k, 
+                 stop=stop
+                 )
+    return result['choices'][0]['text'].strip()
+
+def chat(prompt, temperature=0.7, max_tokens=1024, top_p=0.9, top_k=40):
+    if llm is None:
+        raise RuntimeError("LLM not initialized (running under testrunner).")
     
-    from transformers import AutoModelForCausalLM, AutoTokenizer
+    if type(prompt) is not list:
+        prompt = [{"role": "user", "content": prompt}]
+    result = llm.create_chat_completion(prompt, 
+                                        max_tokens=max_tokens, 
+                                        temperature=temperature, 
+                                        top_p=top_p, 
+                                        top_k=top_k)
+    return result['choices'][0]['message']['content'].strip()
 
-    if tokenizer == None:
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-    if model == None:
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name
-        )
-
-    # prepare the model input    
-    messages = [
-        {"role": "user", "content": prompt}
+def get_top_tokens(prompt, n=10):
+    """
+    Returns a list of the top n possible next tokens and their probabilities.
+    """
+    if llm is None:
+        raise RuntimeError("LLM not initialized (running under testrunner).")
+    
+    result = llm(
+        prompt,
+        max_tokens=1,
+        temperature=0,      # Greedy, but returns logprobs for all options
+        logprobs=n
+    )
+    logprobs = result['choices'][0]['logprobs']['top_logprobs'][0]
+    # logprobs is a dict: {token: logprob}
+    tokens_probs = [
+        (token, float(round(math.exp(logprob), 6)))  # Convert log-prob to prob
+        for token, logprob in logprobs.items()
     ]
-    text = tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True,
-        enable_thinking=False # Switches between thinking and non-thinking modes. Default is True.
-    )
-    model_inputs = tokenizer([text], return_tensors="pt").to("cpu")
-
-    # conduct text completion
-    generated_ids = model.generate(
-        **model_inputs,
-        temperature=temperature,  # ← added parameter here
-        do_sample=True,            # ← must be True for temperature to have an effect        
-        max_new_tokens=128
-    )
-    output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
-
-    # parsing thinking content
-    try:
-        # rindex finding 151668 (</think>)
-        index = len(output_ids) - output_ids[::-1].index(151668)
-    except ValueError:
-        index = 0
-
-    thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
-    content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
-
-    # print("thinking content:", thinking_content)
-    # print("content:", content)
-    return content
+    return tokens_probs
