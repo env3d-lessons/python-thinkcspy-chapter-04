@@ -1,8 +1,8 @@
 {
   "name": "Python Development disable copilot",
   "features": {},
-  "postCreateCommand": "pip install torch torchvision torchaudio transformers --extra-index-url https://download.pytorch.org/whl/cpu",
-  "postAttachCommand": "rm -rf ~/.vscode-remote/extensions/github.copilot* && chmod -w ~/.vscode-remote/extensions && exit",
+  // "postCreateCommand": "pip install torch torchvision torchaudio transformers --extra-index-url https://download.pytorch.org/whl/cpu",
+  // "postAttachCommand": "rm -rf ~/.vscode-remote/extensions/github.copilot* && chmod -w ~/.vscode-remote/extensions && exit",
   "customizations": {
     "vscode": {
       "extensions": [
