@@ -1,7 +1,7 @@
 {
   "name": "Python llama.cpp Codespaces",
   "features": {},
-  "postCreateCommand": "bash .devcontainer/install.sh",
+  "postCreateCommand": "bash .devcontainer/install.sh; exit",
   "postAttachCommand": "rm -rf ~/.vscode-remote/extensions/github.copilot* && chmod -w ~/.vscode-remote/extensions",
   "customizations": {
     "vscode": {
