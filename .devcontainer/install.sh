@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Optionally remove copilot
+# 
+
 DEV_PATH="/workspaces/$(basename $(pwd))/.devcontainer"
 MODEL_FILE="/workspaces/$(basename $(pwd))/qwen2.5-0.5b-instruct-q4_k_m.gguf"
 
@@ -8,9 +11,6 @@ if [ -f "$MODEL_FILE" ]; then
     echo "✅ Model already exists, skipping setup."
     exit 0
 fi
-
-# Optionally remove copilot
-# rm -rf ~/.vscode-remote/extensions/github.copilot* && chmod -w ~/.vscode-remote/extensions
 
 # Ensure devcontainer path exists
 mkdir -p "$DEV_PATH"
